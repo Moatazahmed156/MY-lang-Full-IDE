@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MY-Lang IDE — Project Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#04040a;
+  --bg2:#080812;
+  --bg3:#0d0d1f;
+  --surface:#111126;
+  --surface2:#16162e;
+  --border:#1e1e40;
+  --border2:#2a2a55;
+  --accent:#00e5ff;
+  --accent2:#a18fc0;
+  --accent3:#ff3d71;
+  --green:#00ff9d;
+  --amber:#ffb700;
+  --text:#e8e8f8;
+  --text2:#ffffff;
+  --text3:#bebec1;
+  --font:'Space Grotesk',sans-serif;
+  --mono:'Syne Mono',monospace;
+  --display:'Syne',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+/* BACKGROUND GRID */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+/* GLOW ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:rgba(124,58,237,0.12);top:-100px;right:-100px;}
+.orb2{width:400px;height:400px;background:rgba(0,229,255,0.08);bottom:100px;left:-100px;}
+.orb3{width:300px;height:300px;background:rgba(255,61,113,0.06);top:50%;left:40%;}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  height:56px;
+  background:rgba(4,4,10,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+  z-index:1000;
+}
+.nav-logo{
+  font-family:var(--display);
+  font-weight:800;
+  font-size:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo .mz{color:var(--accent);text-shadow:0 0 20px rgba(0,229,255,0.5);}
+.nav-logo .ide{
+  font-size:10px;
+  background:rgba(124,58,237,0.2);
+  border:1px solid rgba(124,58,237,0.4);
+  color:#c084fc;
+  padding:2px 8px;border-radius:4px;
+  letter-spacing:2px;
+}
+.nav-links{display:flex;gap:4px;}
+.nav-link{
+  padding:6px 14px;border-radius:6px;
+  color:var(--text2);font-size:13px;
+  text-decoration:none;border:1px solid transparent;
+  transition:all 0.15s;
+}
+.nav-link:hover{color:var(--text);background:var(--surface);border-color:var(--border);}
+
+/* SECTIONS */
+section{position:relative;z-index:1;}
+
+/* HERO */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:100px 40px 60px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);
+  background:rgba(0,229,255,0.07);
+  border:1px solid rgba(0,229,255,0.2);
+  padding:6px 16px;border-radius:20px;
+  margin-bottom:28px;
+  animation:fadeUp 0.6s ease both;
+}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.hero-title{
+  font-family:var(--display);
+  font-size:clamp(48px,8vw,96px);
+  font-weight:800;
+  line-height:1.0;
+  margin-bottom:24px;
+  animation:fadeUp 0.6s 0.1s ease both;
+}
+.hero-title .line1{display:block;color:var(--text);}
+.hero-title .line2{
+  display:block;
+  background:linear-gradient(135deg,var(--accent),#7c3aed,var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:18px;color:var(--text2);max-width:600px;
+  margin:0 auto 40px;
+  animation:fadeUp 0.6s 0.2s ease both;
+}
+.hero-links{
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+  animation:fadeUp 0.6s 0.3s ease both;
+}
+.hero-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;border-radius:10px;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:all 0.2s;letter-spacing:0.3px;
+}
+.btn-primary{
+  background:var(--accent);color:#000;
+}
+.btn-primary:hover{background:#33ecff;transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,229,255,0.3);}
+.btn-secondary{
+  background:transparent;color:var(--text);
+  border:1px solid var(--border2);
+}
+.btn-secondary:hover{background:var(--surface);border-color:var(--border2);transform:translateY(-2px);}
+.btn-ghost{
+  background:rgba(124,58,237,0.1);color:#c084fc;
+  border:1px solid rgba(124,58,237,0.3);
+}
+.btn-ghost:hover{background:rgba(124,58,237,0.2);transform:translateY(-2px);}
+
+/* LINK INPUT ROW */
+.links-input-section{
+  padding:60px 40px;
+  max-width:900px;margin:0 auto;
+}
+.links-title{
+  font-family:var(--display);font-size:28px;font-weight:700;
+  margin-bottom:8px;text-align:center;
+}
+.links-sub{color:var(--text2);font-size:14px;text-align:center;margin-bottom:32px;}
+.links-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.link-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  transition:border-color 0.2s;
+}
+.link-card:focus-within{border-color:var(--accent2);}
+.link-card-icon{font-size:22px;margin-bottom:10px;}
+.link-card-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+.link-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;}
+.link-input{
+ padding:8px 12px;
+ font-size: 15px !important;
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  color:var(--text);
+  font-family:var(--mono);font-size:11px;
+  outline:none;
+  transition:border-color 0.15s;
+}
+.link-input:focus{border-color:var(--accent);}
+.link-input::placeholder{color:var(--text3);}
+.link-save-btn{
+  margin-top:20px;
+  display:block;width:100%;
+  padding:10px;border-radius:8px;
+  background:rgba(0,229,255,0.1);
+  border:1px solid rgba(0,229,255,0.3);
+  color:var(--accent);
+  font-family:var(--font);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;letter-spacing:0.5px;
+}
+.link-save-btn:hover{background:rgba(0,229,255,0.2);}
+.link-saved{
+  display:none;
+  text-align:center;padding:10px;
+  color:var(--green);font-size:12px;margin-top:8px;
+}
+/* Link display buttons */
+.link-display{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:16px 0 8px;}
+.link-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:8px;
+  font-size:13px;font-weight:600;
+  text-decoration:none;
+  border:1px solid;
+  transition:all 0.15s;
+}
+.pill-live{background:rgba(0,255,157,0.08);color:var(--green);border-color:rgba(0,255,157,0.25);}
+.pill-live:hover{background:rgba(0,255,157,0.15);}
+.pill-code{background:rgba(124,58,237,0.1);color:#c084fc;border-color:rgba(124,58,237,0.3);}
+.pill-code:hover{background:rgba(124,58,237,0.2);}
+.pill-video{background:rgba(255,61,113,0.08);color:var(--accent3);border-color:rgba(255,61,113,0.25);}
+.pill-video:hover{background:rgba(255,61,113,0.15);}
+
+/* DIVIDER */
+.section-divider{
+  height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);
+  margin:0 40px;
+}
+
+/* SECTION HEADER */
+.section-header{text-align:center;padding:64px 40px 40px;}
+.section-badge{
+  display:inline-block;
+  font-size:13px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent2);
+  background:rgba(119, 57, 225, 0.49);
+  border:1px solid rgba(124,58,237,0.25);
+  padding:4px 12px;border-radius:20px;
+  margin-bottom:16px;
+}
+.section-title{
+  font-family:var(--display);font-size:clamp(28px,4vw,40px);font-weight:800;
+  color:var(--text);margin-bottom:12px;
+}
+.section-title span{color:var(--accent);}
+.section-sub{font-size:15px;color:var(--text2);max-width:560px;margin:0 auto;}
+
+/* FEATURES */
+#features{padding:0 40px 64px;}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  max-width:1100px;margin:0 auto;
+}
+.feat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--card-accent,var(--accent));
+  opacity:0;transition:opacity 0.2s;
+}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-3px);}
+.feat-card:hover::before{opacity:1;}
+.feat-icon{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+  margin-bottom:16px;
+  background:var(--icon-bg,rgba(0,229,255,0.1));
+}
+.feat-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.7;}
+.feat-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.feat-tag{
+  font-size:10px;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  color:var(--text2);
+}
+
+/* TECH STACK */
+#tech{padding:0 40px 64px;}
+.tech-wrapper{max-width:900px;margin:0 auto;}
+.tech-category{margin-bottom:32px;}
+.tech-cat-title{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.tech-cat-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.tech-row{display:flex;flex-wrap:wrap;gap:10px;}
+.tech-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  font-size:13px;color:var(--text);font-weight:500;
+  transition:all 0.15s;
+}
+.tech-chip:hover{border-color:var(--border2);background:var(--surface2);}
+.tech-dot{width:8px;height:8px;border-radius:50%;}
+
+/* PIPELINE */
+#pipeline{padding:0 40px 64px;}
+.pipeline-wrapper{max-width:1000px;margin:0 auto;}
+.pipe-stage{
+  display:flex;gap:24px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px;
+  margin-bottom:12px;
+  transition:all 0.2s;align-items:flex-start;
+}
+.pipe-stage:hover{border-color:var(--border2);}
+.pipe-num{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:13px;font-weight:600;
+  flex-shrink:0;
+}
+.pipe-content{flex:1;}
+.pipe-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.pipe-desc{font-size:13px;color:var(--text2);}
+.pipe-badge{
+  font-size:10px;padding:3px 10px;border-radius:20px;
+  font-weight:600;letter-spacing:0.5px;
+  flex-shrink:0;
+  align-self:flex-start;
+}
+
+/* TEAM */
+#team{padding:0 40px 64px;}
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+  max-width:900px;margin:0 auto;
+}
+.team-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 24px;
+  text-align:center;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.team-card:hover{border-color:var(--border2);transform:translateY(-4px);}
+.team-card::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:3px;
+  background:var(--member-color,var(--accent));
+  opacity:0;transition:opacity 0.2s;
+}
+.team-card:hover::after{opacity:1;}
+.team-avatar{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:22px;font-weight:800;
+  margin:0 auto 16px;
+  border:2px solid var(--border);
+  background:var(--avatar-bg,rgba(0,229,255,0.08));
+  color:var(--avatar-color,var(--accent));
+}
+.team-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.team-role{font-size:14px;color:var(--text2);margin-bottom:12px;letter-spacing:0.3px;}
+
+/* FILE TREE */
+#structure{padding:0 40px 64px;}
+.tree-wrapper{
+  max-width:700px;margin:0 auto;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+}
+.tree-header{
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,0.2);
+}
+.tree-dots{display:flex;gap:6px;}
+.tree-dot{width:10px;height:10px;border-radius:50%;}
+.tree-body{padding:20px;font-family:var(--mono);font-size:12px;line-height:2;}
+.tree-line{display:flex;align-items:baseline;gap:8px;}
+.tree-indent{color:var(--border2);}
+.tree-folder{color:var(--amber);}
+.tree-file{color:var(--text2);}
+.tree-file.jsx{color:#61dafb;}
+.tree-file.js{color:var(--amber);}
+.tree-file.css{color:var(--accent3);}
+.tree-file.html{color:var(--accent3);}
+.tree-file.json{color:var(--green);}
+.tree-comment{color:var(--text3);font-size:11px;}
+
+/* FOOTER */
+footer{
+  padding:40px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  color:var(--text3);font-size:12px;
+}
+footer a{color:var(--text2);text-decoration:none;}
+footer a:hover{color:var(--accent);}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(24px);transition:all 0.5s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="mz">MY</span><span style="color:var(--text2)">-Lang</span>
+    <span class="ide">IDE</span>
+  </div>
+  <div class="nav-links">
+    <a href="#hero" class="nav-link">Home</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#tech" class="nav-link">Tech</a>
+    <a href="#pipeline" class="nav-link">Pipeline</a>
+    <a href="#team" class="nav-link">Team</a>
+    <a href="#structure" class="nav-link">Files</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    Educational Compiler IDE — v1.0
+  </div>
+  <h1 class="hero-title">
+    <span class="line1">Build. Compile.</span>
+    <span class="line2">Understand.</span>
+  </h1>
+  <p class="hero-sub">
+    MY-Lang IDE is a full browser-based compiler playground that lets you write code and watch it transform — token by token, node by node — through every stage of compilation.
+  </p>
+  <div class="hero-links" id="hero-dynamic-links">
+    <!-- Populated by JS -->
+  </div>
+  <div style="margin-top:48px;display:flex;gap:32px;justify-content:center;flex-wrap:wrap;">
+    <div style="text-align:center;">
+      <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent);">5</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px;">Compiler Stages</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:#c084fc;">8</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px;">Example Programs</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--green);">26</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px;">Source Files</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent3);">3</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:2px;">Pages & Routes</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- LINKS INPUT -->
+<section id="links-section">
+  <div class="links-input-section reveal">
+    <div class="section-badge">🔗 Project Links</div>
+    <h2 class="links-title">Live Demo · Code · Video</h2>
+    <div class="links-grid">
+      <div class="link-card">
+        <div class="link-card-icon">🚀</div>
+        <div class="link-card-label">Live Demo</div>
+        <div class="link-card-title">Deployed Application</div>
+        <a href="https://serene-salamander-98464b.netlify.app/" class="link-input" id="link-live" target="_blank">Go to Result</a>
+      </div>
+      <div class="link-card">
+        <div class="link-card-icon">📦</div>
+        <div class="link-card-label">Source Code</div>
+        <div class="link-card-title">GitHub Repository</div>
+        <a href="https://github.com/Moatazahmed156/MY-lang-Full-IDE" class="link-input" id="link-code" target="_blank">Go to Code</a>
+      </div>
+      <div class="link-card">
+        <div class="link-card-icon">🎬</div>
+        <div class="link-card-label">Video Demo</div>
+        <div class="link-card-title">presentation</div>
+        <a href="https://drive.google.com/file/d/1BCxYjPf2ybTuCuwLrDv7fftAQjdP1iou/view?usp=sharing" class="link-input" id="link-video" target="_blank">Watch Video</a>
+      </div>
+    </div>
+    <div class="link-display" id="link-display" style="margin-top:16px;"></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-header reveal">
+    <div class="section-badge">✦ Features</div>
+    <h2 class="section-title">Everything you need to <span>learn compilers</span></h2>
+    <p class="section-sub">A complete compiler pipeline visualized in real time — from raw characters to program output.</p>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feat-card" style="--card-accent:var(--accent);">
+      <div class="feat-icon" style="--icon-bg:rgba(0,229,255,0.1);">⌨</div>
+      <div class="feat-title">Smart Code Editor</div>
+      <div class="feat-desc">Full-featured textarea with live line numbers, error line highlighting, Tab key indent support, cursor tracking, and real-time error count in the status bar.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">Line Numbers</span>
+        <span class="feat-tag">Error Markers</span>
+        <span class="feat-tag">Tab Indent</span>
+        <span class="feat-tag">Cursor Pos</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:#c084fc;">
+      <div class="feat-icon" style="--icon-bg:rgba(124,58,237,0.1);">⬡</div>
+      <div class="feat-title">Lexer / Tokenizer</div>
+      <div class="feat-desc">Full MY-Lang tokenizer supporting keywords, identifiers, strings, numbers, booleans, operators, punctuation, single/multi-line comments, and escape sequences.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">Token Table</span>
+        <span class="feat-tag">Color Coded</span>
+        <span class="feat-tag">Line Tracking</span>
+        <span class="feat-tag">Error Recovery</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:var(--amber);">
+      <div class="feat-icon" style="--icon-bg:rgba(255,183,0,0.1);">⎇</div>
+      <div class="feat-title">Recursive Descent Parser</div>
+      <div class="feat-desc">A hand-written recursive descent parser that builds a full Abstract Syntax Tree from the token stream, with error recovery to keep parsing after mistakes.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">AST Builder</span>
+        <span class="feat-tag">JSON View</span>
+        <span class="feat-tag">Error Recovery</span>
+        <span class="feat-tag">Expr Precedence</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:var(--green);">
+      <div class="feat-icon" style="--icon-bg:rgba(0,255,157,0.08);">⊞</div>
+      <div class="feat-title">Interactive AST Tree</div>
+      <div class="feat-desc">Renders the full AST as a collapsible tree with color-coded node types. Each node shows its type, inline value summary, and source line number.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">Collapsible</span>
+        <span class="feat-tag">Color Nodes</span>
+        <span class="feat-tag">Line Numbers</span>
+        <span class="feat-tag">Click to Toggle</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:var(--accent3);">
+      <div class="feat-icon" style="--icon-bg:rgba(255,61,113,0.08);">⚙</div>
+      <div class="feat-title">Semantic Analyzer</div>
+      <div class="feat-desc">Multi-pass semantic analysis with scope management, symbol table construction, undeclared variable detection, duplicate declaration errors, and type mismatch warnings.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">Symbol Table</span>
+        <span class="feat-tag">Scope Chains</span>
+        <span class="feat-tag">Type Checking</span>
+        <span class="feat-tag">Warnings</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:#7c3aed;">
+      <div class="feat-icon" style="--icon-bg:rgba(124,58,237,0.1);">⊟</div>
+      <div class="feat-title">Assembly Code Generator</div>
+      <div class="feat-desc">Generates readable pseudo-assembly with .DATA and .TEXT sections, named labels, LOAD/STORE/JMP/CMP instructions, and temporary register allocation.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">.DATA Section</span>
+        <span class="feat-tag">.TEXT Section</span>
+        <span class="feat-tag">Jump Labels</span>
+        <span class="feat-tag">Registers</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:var(--green);">
+      <div class="feat-icon" style="--icon-bg:rgba(0,255,157,0.08);">▶</div>
+      <div class="feat-title">Tree-Walking Interpreter</div>
+      <div class="feat-desc">Executes MY-Lang programs by walking the AST. Supports all language features including arrays, loops, recursion guards, and 13 built-in functions.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">Console Output</span>
+        <span class="feat-tag">Runtime Errors</span>
+        <span class="feat-tag">Built-ins</span>
+        <span class="feat-tag">Infinite Loop Guard</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:#c084fc;">
+      <div class="feat-icon" style="--icon-bg:rgba(124,58,237,0.1);">⏭</div>
+      <div class="feat-title">Step-Through Mode</div>
+      <div class="feat-desc">Enable Step Mode to advance through the compiler pipeline one stage at a time — Lexer → Parser → Semantic → CodeGen → Execute — watching each tab populate live.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">Stage Tracker</span>
+        <span class="feat-tag">Next Button</span>
+        <span class="feat-tag">Visual Indicator</span>
+        <span class="feat-tag">Progressive</span>
+      </div>
+    </div>
+    <div class="feat-card" style="--card-accent:var(--amber);">
+      <div class="feat-icon" style="--icon-bg:rgba(255,183,0,0.1);">📄</div>
+      <div class="feat-title">Docs & Tutorial Pages</div>
+      <div class="feat-desc">Full language reference at /docs covering syntax, data types, operators, and built-ins. Plus a /tutorial page explaining each compiler stage with annotated examples.</div>
+      <div class="feat-tags">
+        <span class="feat-tag">React Router</span>
+        <span class="feat-tag">Syntax Guide</span>
+        <span class="feat-tag">Compiler Theory</span>
+        <span class="feat-tag">Code Examples</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="section-header reveal">
+    <div class="section-badge">⚡ Technologies</div>
+    <h2 class="section-title">Built with <span>modern tools</span></h2>
+    <p class="section-sub">Zero backend required. Everything runs in the browser — no servers, no build-time compilation.</p>
+  </div>
+  <div class="tech-wrapper reveal">
+    <div class="tech-category">
+      <div class="tech-cat-title">Frontend Framework</div>
+      <div class="tech-row">
+        <div class="tech-chip"><span class="tech-dot" style="background:#61dafb;"></span>React 18</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#41b883;"></span>Functional Components</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#61dafb;"></span>Hooks (useState, useCallback, useRef)</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#c084fc;"></span>React Router v6</div>
+      </div>
+    </div>
+    <div class="tech-category">
+      <div class="tech-cat-title">Build & Tooling</div>
+      <div class="tech-row">
+        <div class="tech-chip"><span class="tech-dot" style="background:#646cff;"></span>Vite 5</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#f7df1e;"></span>JavaScript ES Modules</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#f7df1e;"></span>Plain JavaScript (no TypeScript)</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#646cff;"></span>@vitejs/plugin-react</div>
+      </div>
+    </div>
+    <div class="tech-category">
+      <div class="tech-cat-title">Styling</div>
+      <div class="tech-row">
+        <div class="tech-chip"><span class="tech-dot" style="background:#00e5ff;"></span>Pure CSS (Custom Properties)</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#00e5ff;"></span>CSS Variables / Design Tokens</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#ff6b6b;"></span>Google Fonts — JetBrains Mono + Syne</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#888;"></span>Flexbox + CSS Grid</div>
+      </div>
+    </div>
+    <div class="tech-category">
+      <div class="tech-cat-title">Compiler (Pure JS — No Libraries)</div>
+      <div class="tech-row">
+        <div class="tech-chip"><span class="tech-dot" style="background:#c084fc;"></span>Hand-written Lexer</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#c084fc;"></span>Recursive Descent Parser</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#c084fc;"></span>Scope-based Semantic Analyzer</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#c084fc;"></span>Pseudo-Assembly Code Generator</div>
+        <div class="tech-chip"><span class="tech-dot" style="background:#c084fc;"></span>Tree-Walking Interpreter</div>
+      </div>
+    </div>
+    <div class="tech-category">
+      <div class="tech-cat-title">Deployment (Recommended)</div>
+      <div class="tech-row">
+        <div class="tech-chip"><span class="tech-dot" style="background:#40b5a4;"></span>Netlify</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="section-header reveal">
+    <div class="section-badge">⬡ Compiler Pipeline</div>
+    <h2 class="section-title">From code to <span>output</span></h2>
+    <p class="section-sub">Five sequential stages transform your MY-Lang source code into executable output.</p>
+  </div>
+  <div class="pipeline-wrapper reveal">
+    <div class="pipe-stage">
+      <div class="pipe-num" style="background:rgba(192,132,252,0.15);color:#c084fc;">01</div>
+      <div class="pipe-content">
+        <div class="pipe-title">Lexer — Tokenization</div>
+        <div class="pipe-desc">Reads source characters and produces a flat list of typed tokens. Handles all MY-Lang token types: KEYWORD, IDENTIFIER, NUMBER, STRING, BOOLEAN, OPERATOR, PUNCTUATION. Supports escape sequences, single and multi-line comments, and error-recovery for unknown characters.</div>
+      </div>
+      <span class="pipe-badge" style="background:rgba(192,132,252,0.1);color:#c084fc;border:1px solid rgba(192,132,252,0.3);">lexer.js</span>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;padding:4px;">↓</div>
+    <div class="pipe-stage">
+      <div class="pipe-num" style="background:rgba(147,197,253,0.15);color:#93c5fd;">02</div>
+      <div class="pipe-content">
+        <div class="pipe-title">Parser — AST Construction</div>
+        <div class="pipe-desc">Recursive descent parser that builds a typed AST from the token stream. Handles full expression precedence (logical → comparison → additive → multiplicative → unary → primary), all statement types, block scoping, and error recovery by continuing parse after syntax mistakes.</div>
+      </div>
+      <span class="pipe-badge" style="background:rgba(147,197,253,0.1);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);">parser.js</span>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;padding:4px;">↓</div>
+    <div class="pipe-stage">
+      <div class="pipe-num" style="background:rgba(251,191,36,0.15);color:#fbbf24;">03</div>
+      <div class="pipe-content">
+        <div class="pipe-title">Semantic Analysis — Validation</div>
+        <div class="pipe-desc">Multi-scope semantic analyzer that walks the AST. Maintains a Scope chain for variable resolution across blocks. Builds the symbol table, detects undeclared variables, duplicate declarations, type mismatches (errors for hard conflicts, warnings for coercions), and validates array operations.</div>
+      </div>
+      <span class="pipe-badge" style="background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);">semantic.js</span>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;padding:4px;">↓</div>
+    <div class="pipe-stage">
+      <div class="pipe-num" style="background:rgba(244,114,182,0.15);color:#f472b4;">04</div>
+      <div class="pipe-content">
+        <div class="pipe-title">Code Generation — Pseudo-Assembly</div>
+        <div class="pipe-desc">AST visitor that generates readable pseudo-assembly with .DATA and .TEXT sections. Allocates named temporary registers (t1, t2...), generates jump labels for if/else and while constructs, emits inline comments for readability, and handles all expression and statement node types.</div>
+      </div>
+      <span class="pipe-badge" style="background:rgba(244,114,182,0.1);color:#f472b4;border:1px solid rgba(244,114,182,0.3);">codegen.js</span>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;padding:4px;">↓</div>
+    <div class="pipe-stage">
+      <div class="pipe-num" style="background:rgba(0,255,157,0.12);color:var(--green);">05</div>
+      <div class="pipe-content">
+        <div class="pipe-title">Execution — Tree-Walking Interpreter</div>
+        <div class="pipe-desc">Direct AST interpreter with a dynamic Environment for variable storage. Supports all control flow, array index reads/writes, 13 built-in functions (print, len, sqrt, abs, floor, ceil, round, max, min, pow, str, num, random), runtime error messages, and a 10,000-iteration infinite-loop guard.</div>
+      </div>
+      <span class="pipe-badge" style="background:rgba(0,255,157,0.08);color:var(--green);border:1px solid rgba(0,255,157,0.2);">executor.js</span>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- MY-Lang FEATURES -->
+<section style="padding:0 40px 64px;">
+  <div class="section-header reveal">
+    <div class="section-badge">✦ MY-Lang</div>
+    <h2 class="section-title">The <span>Language</span> itself</h2>
+    <p class="section-sub">MY-Lang is a complete, expressive language designed to be readable, simple, and teachable.</p>
+  </div>
+  <div class="reveal" style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:12px;">Data Types</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--accent);font-family:var(--mono);">number</span><span style="color:var(--text2);">Integer / float values</span></div>
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--green);font-family:var(--mono);">text</span><span style="color:var(--text2);">String values</span></div>
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--amber);font-family:var(--mono);">boolean</span><span style="color:var(--text2);">true / false</span></div>
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:#c084fc;font-family:var(--mono);">Aray</span><span style="color:var(--text2);">Zero-indexed list</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:12px;">Control Flow</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--accent);font-family:var(--mono);">if / else if / else</span></div>
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--accent);font-family:var(--mono);">while ( condition ) { }</span></div>
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--accent);font-family:var(--mono);">main { }</span><span style="color:var(--text2);">entry block</span></div>
+        <div style="display:flex;gap:10px;align-items:center;"><span style="color:var(--accent);font-family:var(--mono);">print( ...args )</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:12px;">Operators</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;font-family:var(--mono);font-size:12px;">
+        <span style="color:var(--accent3);background:rgba(255,61,113,0.08);padding:3px 8px;border-radius:4px;">+</span>
+        <span style="color:var(--accent3);background:rgba(255,61,113,0.08);padding:3px 8px;border-radius:4px;">-</span>
+        <span style="color:var(--accent3);background:rgba(255,61,113,0.08);padding:3px 8px;border-radius:4px;">*</span>
+        <span style="color:var(--accent3);background:rgba(255,61,113,0.08);padding:3px 8px;border-radius:4px;">/</span>
+        <span style="color:var(--accent3);background:rgba(255,61,113,0.08);padding:3px 8px;border-radius:4px;">%</span>
+        <span style="color:var(--amber);background:rgba(255,183,0,0.08);padding:3px 8px;border-radius:4px;">></span>
+        <span style="color:var(--amber);background:rgba(255,183,0,0.08);padding:3px 8px;border-radius:4px;"><</span>
+        <span style="color:var(--amber);background:rgba(255,183,0,0.08);padding:3px 8px;border-radius:4px;">>=</span>
+        <span style="color:var(--amber);background:rgba(255,183,0,0.08);padding:3px 8px;border-radius:4px;"><=</span>
+        <span style="color:var(--green);background:rgba(0,255,157,0.06);padding:3px 8px;border-radius:4px;">==</span>
+        <span style="color:var(--green);background:rgba(0,255,157,0.06);padding:3px 8px;border-radius:4px;">!=</span>
+        <span style="color:#c084fc;background:rgba(124,58,237,0.08);padding:3px 8px;border-radius:4px;">and</span>
+        <span style="color:#c084fc;background:rgba(124,58,237,0.08);padding:3px 8px;border-radius:4px;">or</span>
+        <span style="color:#c084fc;background:rgba(124,58,237,0.08);padding:3px 8px;border-radius:4px;">not</span>
+        <span style="color:#c084fc;background:rgba(124,58,237,0.08);padding:3px 8px;border-radius:4px;">&&</span>
+        <span style="color:#c084fc;background:rgba(124,58,237,0.08);padding:3px 8px;border-radius:4px;">||</span>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:12px;">Built-in Functions</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;font-family:var(--mono);font-size:11px;">
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">print()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">len()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">sqrt()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">abs()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">floor()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">ceil()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">round()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">max()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">min()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">pow()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">str()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">num()</span>
+        <span style="color:var(--accent);background:rgba(0,229,255,0.08);padding:2px 8px;border-radius:4px;">random()</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="section-header reveal">
+    <div class="section-badge">👥 Team</div>
+    <h2 class="section-title">Meet the <span>Builders</span></h2>
+    <p class="section-sub">The developers behind MY-Lang IDE.</p>
+  </div>
+  <div class="team-grid reveal">
+    <div class="team-card" style="--member-color:var(--accent);--avatar-bg:rgba(0,229,255,0.08);--avatar-color:var(--accent);">
+      <div class="team-avatar">MA</div>
+      <div class="team-name">Moataz Ahmed</div>
+      <div class="team-role">2303035</div>
+    </div>
+    <div class="team-card" style="--member-color:#c084fc;--avatar-bg:rgba(124,58,237,0.1);--avatar-color:#c084fc;">
+      <div class="team-avatar">YM</div>
+      <div class="team-name">Yahya Mohamed</div>
+      <div class="team-role">2303107</div>
+    </div>
+    <div class="team-card" style="--member-color:var(--green);--avatar-bg:rgba(0,255,157,0.08);--avatar-color:var(--green);">
+      <div class="team-avatar">MA</div>
+      <div class="team-name">Mahmoud Awd</div>
+      <div class="team-role">2303030</div>
+    </div>
+    <div class="team-card" style="--member-color:var(--amber);--avatar-bg:rgba(255,183,0,0.08);--avatar-color:var(--amber);">
+      <div class="team-avatar">MM</div>
+      <div class="team-name">Marawan Mohamed</div>
+      <div class="team-role">2303089</div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--text3);">
+    ✏ Update team member names directly in the source of this documentation file.
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- FILE STRUCTURE -->
+<section id="structure">
+  <div class="section-header reveal">
+    <div class="section-badge">📁 File Structure</div>
+    <h2 class="section-title">Project <span>Architecture</span></h2>
+    <p class="section-sub">26 files organized into a clean, modular structure.</p>
+  </div>
+  <div class="reveal" style="max-width:700px;margin:0 auto;">
+    <div class="tree-wrapper">
+      <div class="tree-header">
+        <div class="tree-dots">
+          <div class="tree-dot" style="background:#ff5f57;"></div>
+          <div class="tree-dot" style="background:#ffbd2e;"></div>
+          <div class="tree-dot" style="background:#28ca42;"></div>
+        </div>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text2);">MY-lang-Full-IDE/</span>
+      </div>
+      <div class="tree-body">
+        <div class="tree-line"><span class="tree-file html">index.html</span><span class="tree-comment" style="margin-left:8px;">← app entry</span></div>
+        <div class="tree-line"><span class="tree-file json">package.json</span></div>
+        <div class="tree-line"><span class="tree-file js">vite.config.js</span></div>
+        <div style="margin-top:6px;"></div>
+        <div class="tree-line"><span class="tree-folder">src/</span></div>
+        <div class="tree-line"><span class="tree-indent">├─ </span><span class="tree-file jsx">main.jsx</span><span class="tree-comment" style="margin-left:8px;">← React root</span></div>
+        <div class="tree-line"><span class="tree-indent">├─ </span><span class="tree-file jsx">App.jsx</span><span class="tree-comment" style="margin-left:8px;">← Router + Layout</span></div>
+        <div style="margin-top:4px;"></div>
+        <div class="tree-line"><span class="tree-indent">├─ </span><span class="tree-folder">compiler/</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file js">lexer.js</span><span class="tree-comment" style="margin-left:8px;">← Tokenizer</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file js">parser.js</span><span class="tree-comment" style="margin-left:8px;">← AST Builder</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file js">semantic.js</span><span class="tree-comment" style="margin-left:8px;">← Type/Scope Checker</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file js">codegen.js</span><span class="tree-comment" style="margin-left:8px;">← Assembly Generator</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file js">executor.js</span><span class="tree-comment" style="margin-left:8px;">← Interpreter</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file js">index.js</span><span class="tree-comment" style="margin-left:8px;">← Pipeline Orchestrator</span></div>
+        <div class="tree-line"><span class="tree-indent">│  └─ </span><span class="tree-file js">examples.js</span><span class="tree-comment" style="margin-left:8px;">← 8 Example Programs</span></div>
+        <div style="margin-top:4px;"></div>
+        <div class="tree-line"><span class="tree-indent">├─ </span><span class="tree-folder">components/</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">Navbar.jsx</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">CodeEditor.jsx</span><span class="tree-comment" style="margin-left:8px;">← Editor + Line Numbers</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">Toolbar.jsx</span><span class="tree-comment" style="margin-left:8px;">← Run/Step/Reset/Examples</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">RightPanel.jsx</span><span class="tree-comment" style="margin-left:8px;">← Tab Switcher</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">TokensTab.jsx</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">ParserTab.jsx</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">ASTTab.jsx</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">SemanticTab.jsx</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">AssemblyTab.jsx</span></div>
+        <div class="tree-line"><span class="tree-indent">│  └─ </span><span class="tree-file jsx">OutputTab.jsx</span></div>
+        <div style="margin-top:4px;"></div>
+        <div class="tree-line"><span class="tree-indent">├─ </span><span class="tree-folder">pages/</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">IDEPage.jsx</span><span class="tree-comment" style="margin-left:8px;">← / route</span></div>
+        <div class="tree-line"><span class="tree-indent">│  ├─ </span><span class="tree-file jsx">DocsPage.jsx</span><span class="tree-comment" style="margin-left:8px;">← /docs route</span></div>
+        <div class="tree-line"><span class="tree-indent">│  └─ </span><span class="tree-file jsx">TutorialPage.jsx</span><span class="tree-comment" style="margin-left:8px;">← /tutorial route</span></div>
+        <div style="margin-top:4px;"></div>
+        <div class="tree-line"><span class="tree-indent">└─ </span><span class="tree-folder">styles/</span></div>
+        <div class="tree-line"><span class="tree-indent">   └─ </span><span class="tree-file css">main.css</span><span class="tree-comment" style="margin-left:8px;">← Full IDE Design System</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider" style="margin-top:32px;"></div>
+
+<!-- HOW TO RUN -->
+<section style="padding:40px;text-align:center;">
+  <div class="reveal" style="max-width:600px;margin:0 auto;">
+    <div class="section-badge" style="display:inline-block;margin-bottom:20px;">🚀 Getting Started</div>
+    <h2 style="font-family:var(--display);font-size:28px;font-weight:800;margin-bottom:16px;">Run it <span style="color:var(--accent);">in 4 steps</span></h2>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;text-align:left;">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2);font-family:var(--mono);font-size:11px;color:var(--text2);">terminal</div>
+      <div style="padding:20px;font-family:var(--mono);font-size:13px;line-height:2.2;">
+        <div><span style="color:var(--text3);">$</span> <span style="color:var(--green);">unzip</span> <span style="color:var(--text);">MY-lang-Full-IDE.zip</span></div>
+        <div><span style="color:var(--text3);">$</span> <span style="color:var(--green);">cd</span> <span style="color:var(--text);">MY-lang-Full-IDE</span></div>
+        <div><span style="color:var(--text3);">$</span> <span style="color:var(--green);">npm</span> <span style="color:var(--text);">install</span></div>
+        <div><span style="color:var(--text3);">$</span> <span style="color:var(--green);">npm</span> <span style="color:var(--text);">run dev</span></div>
+        <div style="margin-top:8px;"><span style="color:var(--text3);">#</span> <span style="color:var(--text2);">Open</span> <span style="color:var(--accent);">http://localhost:5173</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom:12px;">
+    <span style="font-family:var(--display);font-weight:800;font-size:18px;">
+      <span style="color:var(--accent);">MY</span><span style="color:var(--text2);">-Lang</span> <span style="color:var(--text3);font-size:12px;">IDE</span>
+    </span>
+  </div>
+  <div style="color:var(--text3);font-size:12px;margin-bottom:8px;">
+    Educational Compiler IDE · Built with React + Vite · Pure JavaScript Compiler Pipeline
+  </div>
+  <div style="font-size:11px;color:var(--text3);">
+    Documentation generated for MY-Lang IDE v1.0 · 2026
+  </div>
+</footer>
+
+<script>
+function saveLinks(){
+  const live=document.getElementById('link-live').value.trim();
+  const code=document.getElementById('link-code').value.trim();
+  const video=document.getElementById('link-video').value.trim();
+  const disp=document.getElementById('link-display');
+  const hero=document.getElementById('hero-dynamic-links');
+  disp.innerHTML='';
+  hero.innerHTML='';
+  let hasAny=false;
+  if(live){
+    const a=`<a href="${live}" target="_blank" class="link-pill pill-live">🚀 Live Demo</a>`;
+    disp.innerHTML+=a;
+    hero.innerHTML+=`<a href="${live}" target="_blank" class="hero-btn btn-primary">🚀 Live Demo</a>`;
+    hasAny=true;
+  } else {
+    hero.innerHTML+=`<a href="#features" class="hero-btn btn-primary">✦ Explore Features</a>`;
+  }
+  if(code){
+    const a=`<a href="${code}" target="_blank" class="link-pill pill-code">📦 Source Code</a>`;
+    disp.innerHTML+=a;
+    hero.innerHTML+=`<a href="${code}" target="_blank" class="hero-btn btn-secondary">📦 View Code</a>`;
+    hasAny=true;
+  } else if(!live){
+    hero.innerHTML+=`<a href="#team" class="hero-btn btn-secondary">👥 Meet the Team</a>`;
+  }
+  if(video){
+    const a=`<a href="${video}" target="_blank" class="link-pill pill-video">🎬 Watch Demo</a>`;
+    disp.innerHTML+=a;
+    hero.innerHTML+=`<a href="${video}" target="_blank" class="hero-btn btn-ghost">🎬 Watch Demo</a>`;
+    hasAny=true;
+  }
+  if(!hasAny){
+    hero.innerHTML=`<a href="#features" class="hero-btn btn-primary">✦ Explore Features</a><a href="#team" class="hero-btn btn-secondary">👥 Team</a>`;
+    return;
+  }
+  const msg=document.getElementById('link-saved-msg');
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',3000);
+}
+
+// Init hero buttons with defaults
+(function initHero(){
+  const h=document.getElementById('hero-dynamic-links');
+  h.innerHTML=`<a href="#features" class="hero-btn btn-primary">✦ Explore Features</a><a href="#team" class="hero-btn btn-secondary">👥 Meet the Team</a><a href="#pipeline" class="hero-btn btn-ghost">⬡ Pipeline</a>`;
+})();
+
+// Scroll reveal
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
